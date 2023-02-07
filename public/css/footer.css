@@ -1,0 +1,14 @@
+.footer-base {
+  background-color:#239431; 
+  width:60%;
+   margin:0 auto;
+   position:relative;
+   padding-top:12px
+
+}
+footer #p {
+    padding: 10.5px;
+    margin: 0px;
+    line-height: 100%;
+      text-align: center;
+}

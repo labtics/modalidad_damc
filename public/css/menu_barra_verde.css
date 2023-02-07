@@ -1,0 +1,15 @@
+
+.mega-nav {
+    background:#239431;
+    border-radius:0;
+    margin-bottom:0;
+}
+.mega-nav.navbar-default .navbar-nav > li > a {
+    color:#fff;
+    transition: all 200ms ease-out;
+    -webkit-transition: all 200ms ease-out;
+    -ms-transition: all 200ms ease-out;
+}
+.mega-nav.navbar-default .navbar-nav > li > a:hover {
+    background:#0075b3;
+} 
