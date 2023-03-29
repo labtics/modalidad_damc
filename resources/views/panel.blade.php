@@ -71,6 +71,7 @@ p{
                       <th>Apellidos</th>
                       <th>Nombre</th>
                       <th>Fecha</th>
+                      <th>Acción</th>
 
                     </tr>
                   </thead>
@@ -84,6 +85,11 @@ p{
                       <td>{{ucwords($egresado->apellidos)}}</td>
                       <td>{{ucwords($egresado->nombre)}}</td>
                       <td>{{$egresado->created_at}}</td>
+                      <td>  
+                        <button type="button" class="btn btn-default btn-sm">
+                        <i class="bi bi-database-up"></i
+                        </button>
+                      </td>
                     </tr>
                   @endforeach
                   
