@@ -5,6 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+//El modelo Academico se relacionará con dos modelos: 
+//+ modelo Egresado con una cardinalidad de 1 a 1. Es decir: Un dato Academico se relaciona con un Egresado
+//+ modelo Modalidad con una cardinalidad de 1 a 1. Es decir: Un dato Academico se relaciona con una  Académico
+
+//NOTA: En el caso de una relación 1 a m, se debe hacer la relación inversa y si es así se utiliza "belongsTo"
+
 class Academico extends Model
 {
     use HasFactory;
@@ -18,15 +24,9 @@ class Academico extends Model
         return $this->hasOne('App\Models\Egresado');
     }
 
-
     //Un dato ACADEMICO le pertenece una MODALIDAD
     public function modalidad()
     {
-        return $this->belongsTo('App\Models\Modalidad','id'); 
-        //El segundo argumento de la función  "id" le indica al ORM que utilice la clave
-        //primaria que estoy definiendo, ya que si no lo especifico, Eloquent intentara buscar
-        //en la tabla "modalidad" un campo denominado "academico_id". Recordar que entre la 
-        //tabla "modalidades" y "academicos".
-
+        return $this->belongsTo('App\Models\Modalidad'); 
     }
 }

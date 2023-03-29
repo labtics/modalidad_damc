@@ -1,24 +1,21 @@
-body{
-
-
-}
 
 img{
   
   position: absolute;
-  width: 720px;
-  height: 1000px
+  width: 710px;
+  height: 1100px;
+  
 }
 
   #datos{
     position: relative;
-    top: 20em;
+    top: 180px;
   }
 
 table {
    margin: auto;
-   width: 100%;
-   border: 1px solid #5ABA47;
+   width: 94%;
+   border: 1px solid #ffffff;
 
 
 }
@@ -40,4 +37,42 @@ th {
 
 p{
 	 font-weight: bold;
+   padding: 0 0 0 50px; /* ajuste de margen a la izquierda */
+
  }
+
+ h2 {
+   color: rgb(26, 27, 27);
+   text-shadow: #555 2px 2px 3px;
+   
+   left: 30%;
+   position: absolute;
+   top: 95px;
+ }
+
+ h4 {
+  color: rgb(26, 27, 27);
+  text-shadow: #555 2px 2px 3px;
+  
+  left: 25%;
+  position: absolute;
+  top: 130px;
+}
+
+ ol {
+  padding: 0 0 0 50px; /* ajuste de margen a la izquierda */
+  list-style-position: outside;
+}
+
+li{
+  margin-bottom: 5px;
+
+}
+
+ li:nth-child(odd) { /* filas pares */
+  background-color: #f5f5f5;
+  }
+  
+  li:nth-child(even) { /* filas impares */
+  background-color: #e5e5e5;
+  }
