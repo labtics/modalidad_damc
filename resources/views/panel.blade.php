@@ -86,9 +86,9 @@ p{
                       <td>{{ucwords($egresado->nombre)}}</td>
                       <td>{{$egresado->created_at}}</td>
                       <td>  
-                        <button type="button" class="btn btn-default btn-sm">
-                        <i class="bi bi-database-up"></i
-                        </button>
+                        <a href="{{route('modalidad.edit', $egresado->id)}}" class="btn btn-warning">
+                          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </a>
                       </td>
                     </tr>
                   @endforeach

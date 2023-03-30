@@ -23,4 +23,15 @@ class AdministradoresController extends Controller
 
             return view('panel', ['user' => $user]);
     }
+
+    public function edit($id)
+    {
+            $user = DB::table('academicos')
+                     ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                     ->join('modalidades', 'modalidades.id', '=', 'academicos.modalidad_id')
+                     ->select('egresados.nombre','egresados.apellidos','modalidades.modalidad')
+                     ->where('egresados.id','=', $id);
+   
+             return view('edit', ['user' => $user]);
+    }
 }
