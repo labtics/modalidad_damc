@@ -86,8 +86,8 @@ p{
                       <td>{{ucwords($egresado->nombre)}}</td>
                       <td>{{$egresado->created_at}}</td>
                       <td>  
-                        <a href="{{route('modalidad.edit', $egresado->id)}}" class="btn btn-warning">
-                          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        <a href="{{route('editar', $egresado->id)}}" class="btn btn-warning">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                         </a>
                       </td>
                     </tr>

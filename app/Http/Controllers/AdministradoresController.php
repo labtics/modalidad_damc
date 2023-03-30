@@ -3,10 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Modalidad;
+
 use DB;
 
 class AdministradoresController extends Controller
 {
+
+    public function create()
+    {
+        // La función create me permite mostrar la página inicial del sitio web
+        // Al mismo tiempo a la vista se le pasa una variable denominada modalidades
+        // la cual contiene los campos de la tabla Modalidades.
+
+        $modalidades = Modalidad::all();
+        return view('editar', compact('modalidades'));
+    }
+
     public function buscar_egresado(Request $request)
     {
         $buscar = $request->input('name');
@@ -32,6 +45,6 @@ class AdministradoresController extends Controller
                      ->select('egresados.nombre','egresados.apellidos','modalidades.modalidad')
                      ->where('egresados.id','=', $id);
    
-             return view('edit', ['user' => $user]);
+             return view('editar', ['user' => $user]);
     }
 }

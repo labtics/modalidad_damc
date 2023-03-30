@@ -93,7 +93,9 @@ Route::post('modalidad/consulta/requerimientos', [EgresadosController::class,'co
 Route::get('modalidad/admin/panel', [AdministradoresController::class,'buscar_egresado'])->name('buscar_egresado')->middleware('auth');
 Route::view('/modalidad/panel', 'panel')->middleware('auth');
 
-Route::get('modalidad/{id}/edit', [AdministradoresController::class,'edit'])->name('editar')->middleware('auth');
+
+Route::get('modalidad/edit/{id}', [AdministradoresController::class,'edit'])->name('editar')->middleware('auth');
+Route::get('modalidad/edit/{id}', [AdministradoresController::class,'create'])->middleware('auth');
 
 
 
