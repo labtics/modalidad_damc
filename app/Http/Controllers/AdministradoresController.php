@@ -16,8 +16,7 @@ class AdministradoresController extends Controller
         // Al mismo tiempo a la vista se le pasa una variable denominada modalidades
         // la cual contiene los campos de la tabla Modalidades.
 
-        $modalidades = Modalidad::all();
-        return view('editar', compact('modalidades'));
+
     }
 
     public function buscar_egresado(Request $request)
@@ -39,12 +38,16 @@ class AdministradoresController extends Controller
 
     public function edit($id)
     {
-            $user = DB::table('academicos')
-                     ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
-                     ->join('modalidades', 'modalidades.id', '=', 'academicos.modalidad_id')
-                     ->select('egresados.nombre','egresados.apellidos','modalidades.modalidad')
-                     ->where('egresados.id','=', $id);
-   
-             return view('editar', ['user' => $user]);
+        
+        $modalidades = Modalidad::all();
+
+        $user = DB::table('academicos')
+        ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+        ->join('modalidades', 'modalidades.id', '=', 'academicos.modalidad_id')
+        ->select('egresados.nombre','egresados.apellidos','modalidades.modalidad')
+        ->where('egresados.id','=', $id)
+        ->first();
+
+        return view('editar', compact('user','modalidades'));  
     }
 }

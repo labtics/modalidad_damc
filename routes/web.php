@@ -94,8 +94,7 @@ Route::get('modalidad/admin/panel', [AdministradoresController::class,'buscar_eg
 Route::view('/modalidad/panel', 'panel')->middleware('auth');
 
 
-Route::get('modalidad/edit/{id}', [AdministradoresController::class,'edit'])->name('editar')->middleware('auth');
-Route::get('modalidad/edit/{id}', [AdministradoresController::class,'create'])->middleware('auth');
+Route::get('modalidad/editar/{id}', [AdministradoresController::class,'edit'])->name('editar')->middleware('auth');
 
 
 

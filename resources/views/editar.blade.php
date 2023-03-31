@@ -31,8 +31,7 @@
 </marquee>
 <br>
 <br>
-
- <center><p class="caja"> REGISTRA LOS DATOS DE TU MODALIDAD DE TITULACIÓN</p> </center>
+ <center><p class="caja"> EDITA LA INFORMACIÓN SOLICITADA</p> </center>
   <br>
   @include('mensajes')
   @if (session('success'))
@@ -47,14 +46,14 @@
                     <div class="col-md-6">
                         <div class="form-group">
                               {!! Form::label('name', 'Nombre') !!}
-                              {!! Form::text('nombre', null, ['class' => 'form-control', 'placeholder' => 'Obligatorio', 'required']) !!}
+                              {!! Form::text('nombre', $user->nombre, ['class' => 'form-control', 'placeholder' => 'Obligatorio', 'required']) !!}
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group">
                            {!! Form::label('ape', 'Apellidos') !!}
-                           {!! Form::text('apellidos', null, ['class' => 'form-control', 'placeholder' => 'Obligatorio', 'required']) !!}
+                           {!! Form::text('apellidos', $user->apellidos, ['class' => 'form-control', 'placeholder' => 'Obligatorio', 'required']) !!}
                         </div>
                     </div>
 
@@ -62,7 +61,7 @@
                         <div class="form-group">
                           {!! Form::label('mod', 'Modalidad de Titulación') !!}
                           <select class="form-control" name="modalidad_id" id="modalidad_id" required>
-                          <option value="">Selecciona una opción</option>
+                          <option value="">{{ $user->modalidad }}</option>
                             @foreach ($modalidades as $modalidad)
                               <option value="{{ $modalidad['id'] }}">
                               {{ $modalidad['modalidad'] }}
