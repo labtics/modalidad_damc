@@ -37,19 +37,14 @@ p{
 
 </style>
 
- <center><p class="caja"> PANEL DE CONTROL | Buscar Egresado </p> </center>
+ <center><p class="caja"> BUSCAR EGRESADO </p> </center>
   <br>
-
-  <a href="{{url('damc/coordinador/inicio')}}" class="btn btn-success"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Inicio</a>
-
-  <button class="btn btn-warning hidden-print" onclick="window.print();"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Imprimir </button>
-
         <form action="{{route('buscar_egresado')}}" method="get">
           <br>
           <div class="input-group">
             {!!Form::text('name',null,['class'=>'form-control','placelhoder'=>'Buscar'])!!}
-               <span class="input-group-btn" id="buscar">
-                  {!!Form::submit('Buscar',['class'=>'btn btn-primary'])!!} 
+               <span class="input-group-btn"  id="buscar">
+                  {!!Form::submit('Buscar',['class'=>'btn btn-primary' ])!!} 
                </span>
           </div>           
           <br>
@@ -70,6 +65,8 @@ p{
                       <th>Lic.</th>
                       <th>Apellidos</th>
                       <th>Nombre</th>
+                      <th>Email</th>
+                      <th>Telefono</th>
                       <th>Fecha</th>
                       <th>Acción</th>
 
@@ -84,11 +81,13 @@ p{
                       <td>{{$egresado->licenciatura}}</td>
                       <td>{{ucwords($egresado->apellidos)}}</td>
                       <td>{{ucwords($egresado->nombre)}}</td>
+                      <td>{{$egresado->email}}</td>
+                      <td>{{$egresado->telefono}}</td>
                       <td>{{$egresado->created_at}}</td>
                       <td>  
 
                         <a href="{{route('editar',['id' => $egresado->id])}}" class="btn btn-warning">
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                         </a>
                       </td>
                     </tr>

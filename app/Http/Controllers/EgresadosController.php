@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Egresado;
 use App\Models\Academico;
 use App\Models\Modalidad;
+use App\Models\ActividadLaboral;
+use App\Models\Comentario;
 use App\Http\Requests\StoreEgresado;
 use PDF;
 
@@ -51,6 +53,8 @@ class EgresadosController extends Controller
         
         $egresado = new Egresado($request->all()); 
         $academico = new Academico($request->all());
+        $actividadLaboral = new ActividadLaboral($request->all());
+        $comentario = new Comentario($request->all());
         
         //Paso 2:
         //Se crea una variable $matrìcula la cual se obtiene de la variable "$academico" que es un objeto
@@ -77,11 +81,42 @@ class EgresadosController extends Controller
         else
         {
             // Se procede a guardar los datos del formulario , los cuales fueron obtenidos por la variable $request
+            
+            
+            
             $egresado->saveOrFail();
             $id=$egresado->id; 
 
             $academico->egresado_id=$id;
             $academico->saveOrFail();
+
+            
+            $institucion=$request->input("nombre_institución");
+            
+           
+            if(is_null($institucion))
+            {
+                $institucion="";
+            } 
+         
+            $actividadLaboral->nombre_institución=$institucion;           
+            $actividadLaboral->egresado_id=$id;
+            $actividadLaboral->saveOrFail();
+
+            $opinion=$request->input("comentario");
+
+            if(is_null($opinion))
+            {
+                $opinion="";
+            } 
+
+            $comentario->comentario=$opinion;           
+            $comentario->egresado_id=$id;
+            $comentario->saveOrFail();
+
+            
+            
+           
             
             //Despuès de guardar los datos, se retornara una ruta, que lleva por nombre "reporte" Ver archivo de rutas. como también se le
             //pasa la variable $matricula para que la vista llamada "reporte" pueda trabajar con dicha variable.

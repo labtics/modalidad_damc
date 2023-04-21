@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('nombre', 100);
             $table->string('apellidos',100);
             $table->string('sexo',10);
+            $table->string('estado_civil',12);
             $table->integer('edad');
             $table->string('email');
             $table->string('telefono',10);

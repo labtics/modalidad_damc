@@ -12,17 +12,11 @@
 
 
 <script type="text/javascript">
-  function compararMatricula() {
-  var matricula = document.getElementById("matricula").value;
-  var verificarMatri = document.getElementById("verificarMatri").value;
+ 
+ function confirmacion() {
+        return confirm('¿Estás seguro de que deseas actualizar la información del Egresado?');
+    }
 
-  if (matricula != verificarMatri) {
-    alert("Tu matrícula no coincide, verifica porfavor");
-    return false;
-  }
-
-  return true;
-}
 </script> 
 
 
@@ -35,13 +29,13 @@
   <br>
   @include('mensajes')
   @if (session('success'))
-        <div class="alert alert-danger"  role="alert">
+        <div class="alert alert-success" role="alert">
             {{ session('success') }}
         </div>
 @endif
   <div class="centrar-form">  
-  {!! Form::open(['route'=>'registrar', 'id'=>'form', 'method' => 'post']) !!}
-              
+  <form action="{{ route('actualizar',['id' => $user->id]) }}" method="post">  
+    @csrf @method('PATCH')            
               <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -75,8 +69,8 @@
             
             <br> <br>
              <center>
-              <button class="btn btn-success" onclick="compararMatricula()"> <i class="fa-solid fa-floppy-disk"></i> Guardar </button>
+              <button class="btn btn-success" onclick="return confirmacion()"> <span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span> Guardar Edición </button>
             </center>
-            {!! Form::close() !!}
+        </form>
   </div>
 @endsection

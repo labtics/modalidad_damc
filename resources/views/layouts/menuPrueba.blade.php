@@ -18,6 +18,14 @@
 			<li>
 				<a href="{{ url('modalidad/admin/panel') }}">Panel de Control</a>
 			</li>
+
+			<li>
+				<a href="{{ url('modalidad/admin/graficos') }}">Estadísticas</a>
+			</li>
+
+			<li>
+				<a href="{{ url('modalidad/admin/descargar') }}">Descargar</a>
+			</li>
 			@endauth
 			<li>
 				<a href="{{ url('modalidad/consulta') }}">Consultar Requerimientos</a>

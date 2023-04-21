@@ -13,19 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('academicos', function (Blueprint $table) {
+        Schema::create('comentarios', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->BigIncrements('id');
             $table->unsignedBigInteger('egresado_id');
-            $table->unsignedBigInteger('modalidad_id');
-            $table->string('matricula', 10);
-            $table->string('licenciatura', 10);
-            $table->float('promedio', 2, 2);
-
-            $table->timestamps();
+            $table->string('comentario');
 
             $table->foreign('egresado_id')->references('id')->on('egresados')->OnDelete('cascade');
-            $table->foreign('modalidad_id')->references('id')->on('modalidades')->OnDelete('cascade');
         });
     }
 
@@ -36,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('academicos');
+        //
     }
 };

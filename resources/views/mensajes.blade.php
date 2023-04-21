@@ -1,6 +1,6 @@
 @if (count($errors) > 0)
     <div class="alert alert-danger">
-    	<p>Corrige los siguientes errores:</p>
+    	<p>Atención con las siguientes observaciones:</p>
         <br>
         <ul>
             @foreach ($errors->all() as $message)

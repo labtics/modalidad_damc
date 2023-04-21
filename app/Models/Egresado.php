@@ -13,12 +13,22 @@ class Egresado extends Model
 
     use HasFactory;
     protected $table = 'egresados'; // Se le indica a Laravel la tabla a la cual se accederá
-    protected $fillable = ['nombre', 'apellidos', 'sexo', 'edad', 'email', 'telefono', 'create_at', 'update_at']; //Se le indica a Laravel que campos estarán visibles para acceder.
+    protected $fillable = ['nombre', 'apellidos', 'sexo', 'estado_civil','edad', 'email', 'telefono', 'create_at', 'update_at']; //Se le indica a Laravel que campos estarán visibles para acceder.
 
      //Un EGRESADO se asocia con un dato ACADEMICO
      public function academico() //El nombre de la función debe ser en singular ya que la relación es de 1 a 1
      {
          return $this->hasOne('App\Models\Academico'); // Se le indica a la relación donde se encuentra el modelo "Academico"
+     }
+
+     public function actividadLaboral() //El nombre de la función debe ser en singular ya que la relación es de 1 a 1
+     {
+         return $this->hasOne('App\Models\ActividadLaboral'); // Se le indica a la relación donde se encuentra el modelo "Academico"
+     }
+
+     public function comentario() //El nombre de la función debe ser en singular ya que la relación es de 1 a 1
+     {
+         return $this->hasOne('App\Models\Comentario'); // Se le indica a la relación donde se encuentra el modelo "Academico"
      }
 
      

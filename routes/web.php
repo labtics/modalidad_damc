@@ -91,10 +91,20 @@ Route::post('modalidad/consulta/requerimientos', [EgresadosController::class,'co
 //GESTION DE RUTAS PARA ADMINISTRADOR
 
 Route::get('modalidad/admin/panel', [AdministradoresController::class,'buscar_egresado'])->name('buscar_egresado')->middleware('auth');
-Route::view('/modalidad/panel', 'panel')->middleware('auth');
+//Route::view('/modalidad/panel', 'panel')->middleware('auth'); no recuerdo por que cree esta ruta
 
 
 Route::get('modalidad/editar/{id}', [AdministradoresController::class,'edit'])->name('editar')->middleware('auth');
+Route::patch('modalidad/actualizar/{id}', [AdministradoresController::class,'update'])->name('actualizar')->middleware('auth');
+Route::get('modalidad/admin/graficos', [AdministradoresController::class,'graficos'])->name('graficos')->middleware('auth');
+Route::get('modalidad/admin/graficos_dinamicos', [AdministradoresController::class,'graficos_dinamicos'])->name('graficos_dinamicos')->middleware('auth');
+Route::get('modalidad/admin/descargar', [AdministradoresController::class,'descargar'])->name('descargar')->middleware('auth');
+Route::get('modalidad/admin/descargar_excel', [AdministradoresController::class,'export'])->name('descargar_excel')->middleware('auth');
+
+
+
+//Route::view('/modalidad/admin/estadisticas', 'estadisticas')->middleware('auth');
+
 
 
 

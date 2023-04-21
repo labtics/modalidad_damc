@@ -16,7 +16,7 @@ class Academico extends Model
     use HasFactory;
 
     protected $table = 'academicos';
-    protected $fillable = ['egresado_id', 'modalidad_id', 'matricula', 'licenciatura'];
+    protected $fillable = ['egresado_id', 'modalidad_id', 'matricula', 'licenciatura', 'promedio'];
 
     //Un dato ACADEMICO se asocia con un EGRESADO
     public function egresado()
