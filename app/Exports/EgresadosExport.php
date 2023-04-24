@@ -69,6 +69,6 @@ class EgresadosExport implements FromView
             ->get();
         }
 
-        return view('excel',compact('user'));
+        return view('admin-excel-egresado',compact('user'));
     }
 }

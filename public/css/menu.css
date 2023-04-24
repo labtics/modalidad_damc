@@ -1,10 +1,9 @@
 body{
-	font-family:"HelveticaNeue", Arial,sans-serif;
-	margin: 0;
+
 }
 
 .nav ul{
-	margin-top:10px;
+	margin-top:8px;
     background:#239431;
     list-style: none;
     text-align: center;
@@ -20,7 +19,7 @@ body{
 .nav a{
     color: white;
     text-decoration: none;
-    width: 170px;
+    width: 130px;
     display: block;
     
 }
@@ -28,3 +27,8 @@ body{
 a:hover{
     background:#0075b3;
 } 
+
+.nav ul li a.activo {
+    background-color: #007bff;
+    color: #fff;
+  }

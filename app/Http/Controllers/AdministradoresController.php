@@ -26,7 +26,7 @@ class AdministradoresController extends Controller
 
     }
 
-    public function buscar_egresado(Request $request)
+    public function buscarEgresado(Request $request)
     {
         $buscar = $request->input('name');
     
@@ -40,7 +40,7 @@ class AdministradoresController extends Controller
             ->orderBy('egresados.created_at','DESC')
             ->paginate(20);
 
-            return view('panel', ['user' => $user]);
+            return view('admin-buscar-egresado', ['user' => $user]);
     }
 
     public function edit($id)
@@ -55,7 +55,7 @@ class AdministradoresController extends Controller
         ->where('egresados.id','=', $id)
         ->first();
 
-        return view('editar', compact('user','modalidades'));  
+        return view('admin-editar-egresado', compact('user','modalidades'));  
     }
 
     public function update(Request $request, $id)
@@ -65,11 +65,11 @@ class AdministradoresController extends Controller
         Egresado::where('id', $id)->update(['apellidos' => $request->input('apellidos')]);
         Academico::where('egresado_id', $id)->update(['modalidad_id' => $request->input('modalidad_id')]);
         
-        return redirect()->route('editar', $id)->with('success', 'Los cambios se realizaron correctamente');
+        return redirect()->route('modalidad.edit', $id)->with('success', 'Los cambios se realizaron correctamente');
 
     }
 
-    public function graficos()
+    public function estadistica()
     {
         
                 //GRAFICO SOLICITUDES PROMEDIO POR MES
@@ -243,19 +243,17 @@ class AdministradoresController extends Controller
     
                     $jsonEstadosCivilesActsLabs = json_encode($datosEstadosCivilesActsLabs);
 
-               return view('estadisticas')->with(compact('jsonDataModalidad','jsonDataModalidad_Licenciatura','jsonDataMes','jsonDataDia','jsonDataPromedio', 'jsonDataEstadoCivil', 'jsonDataActividadLaboral', 'jsonEstadosCivilesActsLabs'));
+               return view('admin-estadistica-egresado')->with(compact('jsonDataModalidad','jsonDataModalidad_Licenciatura','jsonDataMes','jsonDataDia','jsonDataPromedio', 'jsonDataEstadoCivil', 'jsonDataActividadLaboral', 'jsonEstadosCivilesActsLabs'));
 
     }
 
-    public function graficos_dinamicos(Request $request)
+    public function estadisticaDinamica(Request $request)
     {
-        
-        $this->graficos();
-        
+                
         $pe = $request->input('pe');
         $ciclo = $request->input('ciclo');
 
-        //..........................
+        //GRAFICO SOLICITUDES DE PROMEDIO POR MES
         
 
         $meses = DB::table('egresados')
@@ -295,6 +293,7 @@ class AdministradoresController extends Controller
         if($ciclo == "todos" AND $pe == "todos" )
         {
   
+                // Primera Parte
                 $modalidades = DB::table('academicos')
                 ->join('modalidades', 'modalidades.id', '=', 'academicos.modalidad_id')
                 ->selectRaw('modalidades.modalidad, count(academicos.modalidad_id) AS total')
@@ -330,10 +329,104 @@ class AdministradoresController extends Controller
                 }
 
                 $jsonDataModalidad_Licenciatura = json_encode($datosModalidad_Licenciatura);
+
+                //Segunda parte
+
+                $promedios = DB::table('academicos')
+                                ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                                ->selectRaw('DISTINCT(academicos.modalidad_id) AS Modalidades, 
+                                            COUNT(CASE WHEN academicos.promedio = 10 THEN 1 END) AS Diez, 
+                                            COUNT(CASE WHEN academicos.promedio = 9 THEN 1 END) AS Nueve ,
+                                            COUNT(CASE WHEN academicos.promedio = 8 THEN 1 END) AS Ocho,
+                                            COUNT(CASE WHEN academicos.promedio = 7 THEN 1 END) AS Siete')
+                                ->groupBy('Modalidades')
+                                ->get();
+                    
+                                $datosPromedios = [];
+                            
+                                foreach($promedios as $promedio)
+                                {
+                                    $datosPromedio[] = ['diez'=>$promedio->Diez,'nueve'=>$promedio->Nueve,'ocho'=>$promedio->Ocho,'siete'=>$promedio->Siete];
+                                    
+                                }
+                
+                                $jsonDataPromedio = json_encode($datosPromedio);
+                    
+                // Grafico por estado civil
+
+                                $estadosCiviles = DB::table('academicos')
+                                ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                                ->selectRaw('CASE egresados.estado_civil 
+                                            WHEN "soltero" THEN "Soltero"
+                                            WHEN "casado" THEN "Casado"
+                                            WHEN "separado" THEN "Separado"
+                                            WHEN "viudo" THEN "Viudo"
+                                            WHEN "union_libre" THEN "Unión Libre"
+                                            END AS estado_civil, COUNT(egresados.estado_civil) AS total')
+                                ->groupBy('egresados.estado_civil')
+                                ->orderBy('total', 'ASC')
+                                ->get();
+                
+                                $datosEstadoCivil = [];
+                
+                                foreach($estadosCiviles as $estadoCivil)
+                                {
+                                    $datosEstadoCivil[] = ['name'=>$estadoCivil->estado_civil, 'y'=>floatval($estadoCivil->total)];
+                                    
+                                }
+                
+                                $jsonDataEstadoCivil = json_encode($datosEstadoCivil);
+
+                    //GRAFICO DE LICENCIATURAS Y ACTIVIDAD LABORAL
+
+                                $actividadesLaborales = DB::table('academicos')
+                                ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                                ->join('actividadesLaborales', 'actividadesLaborales.egresado_id', '=', 'academicos.egresado_id')
+                                ->join('modalidades', 'modalidades.id', '=', 'academicos.modalidad_id')
+                                ->selectRaw('modalidades.modalidad, COUNT(CASE WHEN actividadesLaborales.actividad_laboral = "si" THEN 1 END) AS total')
+                                ->groupBy('modalidades.modalidad')
+                                ->orderBy('total', 'DESC')
+                                ->get();
+                
+                                $datosActividadLaboral = [];
+                
+                                foreach($actividadesLaborales as $actividadLaboral)
+                                {
+                                    $datosActividadLaboral[] = ['name'=>$actividadLaboral->modalidad, 'y'=>floatval($actividadLaboral->total)];
+                                    
+                                }
+                
+                                $jsonDataActividadLaboral = json_encode($datosActividadLaboral);
+                    
+                    //GRAFICO ACTIVIDAD LABORAL POR ESTADO CIVIL
+
+                    $estadosCivilesActsLabs = DB::table('academicos')
+                    ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                    ->join('actividadesLaborales', 'actividadesLaborales.egresado_id', '=', 'academicos.egresado_id')
+                    ->selectRaw('actividadesLaborales.actividad_laboral, 
+                                 COUNT(CASE WHEN egresados.estado_civil = "soltero" THEN 1 END) AS Soltero,
+                                 COUNT(CASE WHEN egresados.estado_civil = "casado" THEN 1 END) AS Casado,
+                                 COUNT(CASE WHEN egresados.estado_civil = "viudo" THEN 1 END) AS Viudo,
+                                 COUNT(CASE WHEN egresados.estado_civil = "union_libre" THEN 1 END) AS Union_Libre,
+                                 COUNT(CASE WHEN egresados.estado_civil = "separado" THEN 1 END) AS Separado
+                                 ')
+                    ->groupBy('actividadesLaborales.actividad_laboral')
+                    ->get();
+        
+                    $datosEstadosCivilesActsLabs = [];
+                
+                    foreach($estadosCivilesActsLabs as $estadoCivilActLab)
+                    {
+                        $datosEstadosCivilesActsLabs[] = ['soltero'=>$estadoCivilActLab->Soltero,'casado'=>$estadoCivilActLab->Casado,'viudo'=>$estadoCivilActLab->Viudo,'union_libre'=>$estadoCivilActLab->Union_Libre,'separado'=>$estadoCivilActLab->Separado];
+                        
+                    }
+    
+                    $jsonEstadosCivilesActsLabs = json_encode($datosEstadosCivilesActsLabs);
             }
             
             else if($ciclo != "todos" AND $pe != "todos" )
             {
+                //Primera Parte
                 $modalidades = DB::table('academicos')
                 ->join('modalidades', 'modalidades.id', '=', 'academicos.modalidad_id')
                 ->selectRaw('modalidades.modalidad, count(academicos.modalidad_id) AS total')
@@ -371,10 +464,113 @@ class AdministradoresController extends Controller
                 }
 
                 $jsonDataModalidad_Licenciatura = json_encode($datosModalidad_Licenciatura);
+
+                //Segunda Parte
+
+
+                $promedios = DB::table('academicos')
+                                ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                                ->selectRaw('DISTINCT(academicos.modalidad_id) AS Modalidades, 
+                                            COUNT(CASE WHEN academicos.promedio = 10 THEN 1 END) AS Diez, 
+                                            COUNT(CASE WHEN academicos.promedio = 9 THEN 1 END) AS Nueve ,
+                                            COUNT(CASE WHEN academicos.promedio = 8 THEN 1 END) AS Ocho,
+                                            COUNT(CASE WHEN academicos.promedio = 7 THEN 1 END) AS Siete')
+                                ->where('academicos.licenciatura', '=', $pe)
+                                ->where(DB::raw('left(academicos.matricula,2)') , '=' , $ciclo)
+                                ->groupBy('Modalidades')
+                                ->get();
+                    
+                                $datosPromedios = [];
+                            
+                                foreach($promedios as $promedio)
+                                {
+                                    $datosPromedio[] = ['diez'=>$promedio->Diez,'nueve'=>$promedio->Nueve,'ocho'=>$promedio->Ocho,'siete'=>$promedio->Siete];
+                                    
+                                }
+                
+                                $jsonDataPromedio = json_encode($datosPromedio);
+                    
+                // Grafico por estado civil
+
+                                $estadosCiviles = DB::table('academicos')
+                                ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                                ->selectRaw('CASE egresados.estado_civil 
+                                            WHEN "soltero" THEN "Soltero"
+                                            WHEN "casado" THEN "Casado"
+                                            WHEN "separado" THEN "Separado"
+                                            WHEN "viudo" THEN "Viudo"
+                                            WHEN "union_libre" THEN "Unión Libre"
+                                            END AS estado_civil, COUNT(egresados.estado_civil) AS total')
+                                ->where('academicos.licenciatura', '=', $pe)
+                                ->where(DB::raw('left(academicos.matricula,2)') , '=' , $ciclo)
+                                ->groupBy('egresados.estado_civil')
+                                ->orderBy('total', 'ASC')
+                                ->get();
+                
+                                $datosEstadoCivil = [];
+                
+                                foreach($estadosCiviles as $estadoCivil)
+                                {
+                                    $datosEstadoCivil[] = ['name'=>$estadoCivil->estado_civil, 'y'=>floatval($estadoCivil->total)];
+                                    
+                                }
+                
+                                $jsonDataEstadoCivil = json_encode($datosEstadoCivil);
+
+                    //GRAFICO DE MODALIDADES Y ACTIVIDAD LABORAL
+
+                                $actividadesLaborales = DB::table('academicos')
+                                ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                                ->join('actividadesLaborales', 'actividadesLaborales.egresado_id', '=', 'academicos.egresado_id')
+                                ->join('modalidades', 'modalidades.id', '=', 'academicos.modalidad_id')
+                                ->selectRaw('modalidades.modalidad, COUNT(CASE WHEN actividadesLaborales.actividad_laboral = "si" THEN 1 END) AS total')
+                                ->where('academicos.licenciatura', '=', $pe)
+                                ->where(DB::raw('left(academicos.matricula,2)') , '=' , $ciclo)
+                                ->groupBy('modalidades.modalidad')
+                                ->orderBy('total', 'DESC')
+                                ->get();
+                
+                                $datosActividadLaboral = [];
+                
+                                foreach($actividadesLaborales as $actividadLaboral)
+                                {
+                                    $datosActividadLaboral[] = ['name'=>$actividadLaboral->modalidad, 'y'=>floatval($actividadLaboral->total)];
+                                    
+                                }
+                
+                                $jsonDataActividadLaboral = json_encode($datosActividadLaboral);
+                    
+                    //GRAFICO ACTIVIDAD LABORAL POR ESTADO CIVIL
+
+                    $estadosCivilesActsLabs = DB::table('academicos')
+                    ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                    ->join('actividadesLaborales', 'actividadesLaborales.egresado_id', '=', 'academicos.egresado_id')
+                    ->selectRaw('actividadesLaborales.actividad_laboral, 
+                                 COUNT(CASE WHEN egresados.estado_civil = "soltero" THEN 1 END) AS Soltero,
+                                 COUNT(CASE WHEN egresados.estado_civil = "casado" THEN 1 END) AS Casado,
+                                 COUNT(CASE WHEN egresados.estado_civil = "viudo" THEN 1 END) AS Viudo,
+                                 COUNT(CASE WHEN egresados.estado_civil = "union_libre" THEN 1 END) AS Union_Libre,
+                                 COUNT(CASE WHEN egresados.estado_civil = "separado" THEN 1 END) AS Separado
+                                 ')
+                    ->where('academicos.licenciatura', '=', $pe)
+                    ->where(DB::raw('left(academicos.matricula,2)') , '=' , $ciclo)
+                    ->groupBy('actividadesLaborales.actividad_laboral')
+                    ->get();
+        
+                    $datosEstadosCivilesActsLabs = [];
+                
+                    foreach($estadosCivilesActsLabs as $estadoCivilActLab)
+                    {
+                        $datosEstadosCivilesActsLabs[] = ['soltero'=>$estadoCivilActLab->Soltero,'casado'=>$estadoCivilActLab->Casado,'viudo'=>$estadoCivilActLab->Viudo,'union_libre'=>$estadoCivilActLab->Union_Libre,'separado'=>$estadoCivilActLab->Separado];
+                        
+                    }
+    
+                    $jsonEstadosCivilesActsLabs = json_encode($datosEstadosCivilesActsLabs);
                 
             }
             else
             {
+                //Primera Parte
                 $modalidades = DB::table('academicos')
                 ->join('modalidades', 'modalidades.id', '=', 'academicos.modalidad_id')
                 ->selectRaw('modalidades.modalidad, count(academicos.modalidad_id) AS total')
@@ -412,14 +608,116 @@ class AdministradoresController extends Controller
                 }
 
                 $jsonDataModalidad_Licenciatura = json_encode($datosModalidad_Licenciatura);
+
+                //Segunda Parte
+
+
+                $promedios = DB::table('academicos')
+                                ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                                ->selectRaw('DISTINCT(academicos.modalidad_id) AS Modalidades, 
+                                            COUNT(CASE WHEN academicos.promedio = 10 THEN 1 END) AS Diez, 
+                                            COUNT(CASE WHEN academicos.promedio = 9 THEN 1 END) AS Nueve ,
+                                            COUNT(CASE WHEN academicos.promedio = 8 THEN 1 END) AS Ocho,
+                                            COUNT(CASE WHEN academicos.promedio = 7 THEN 1 END) AS Siete')
+                                ->where('academicos.licenciatura', '=', $pe)
+                                ->orWhere(DB::raw('left(academicos.matricula,2)') , '=' , $ciclo)
+                                ->groupBy('Modalidades')
+                                ->get();
+                    
+                                $datosPromedios = [];
+                            
+                                foreach($promedios as $promedio)
+                                {
+                                    $datosPromedio[] = ['diez'=>$promedio->Diez,'nueve'=>$promedio->Nueve,'ocho'=>$promedio->Ocho,'siete'=>$promedio->Siete];
+                                    
+                                }
+                
+                                $jsonDataPromedio = json_encode($datosPromedio);
+                    
+                // Grafico por estado civil
+
+                                $estadosCiviles = DB::table('academicos')
+                                ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                                ->selectRaw('CASE egresados.estado_civil 
+                                            WHEN "soltero" THEN "Soltero"
+                                            WHEN "casado" THEN "Casado"
+                                            WHEN "separado" THEN "Separado"
+                                            WHEN "viudo" THEN "Viudo"
+                                            WHEN "union_libre" THEN "Unión Libre"
+                                            END AS estado_civil, COUNT(egresados.estado_civil) AS total')
+                                ->where('academicos.licenciatura', '=', $pe)
+                                ->orWhere(DB::raw('left(academicos.matricula,2)') , '=' , $ciclo)
+                                ->groupBy('egresados.estado_civil')
+                                ->orderBy('total', 'ASC')
+                                ->get();
+                
+                                $datosEstadoCivil = [];
+                
+                                foreach($estadosCiviles as $estadoCivil)
+                                {
+                                    $datosEstadoCivil[] = ['name'=>$estadoCivil->estado_civil, 'y'=>floatval($estadoCivil->total)];
+                                    
+                                }
+                
+                                $jsonDataEstadoCivil = json_encode($datosEstadoCivil);
+
+                    //GRAFICO DE MODALIDADES Y ACTIVIDAD LABORAL
+
+                                $actividadesLaborales = DB::table('academicos')
+                                ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                                ->join('actividadesLaborales', 'actividadesLaborales.egresado_id', '=', 'academicos.egresado_id')
+                                ->join('modalidades', 'modalidades.id', '=', 'academicos.modalidad_id')
+                                ->selectRaw('modalidades.modalidad, COUNT(CASE WHEN actividadesLaborales.actividad_laboral = "si" THEN 1 END) AS total')
+                                ->where('academicos.licenciatura', '=', $pe)
+                                ->orWhere(DB::raw('left(academicos.matricula,2)') , '=' , $ciclo)
+                                ->groupBy('modalidades.modalidad')
+                                ->orderBy('total', 'DESC')
+                                ->get();
+                
+                                $datosActividadLaboral = [];
+                
+                                foreach($actividadesLaborales as $actividadLaboral)
+                                {
+                                    $datosActividadLaboral[] = ['name'=>$actividadLaboral->modalidad, 'y'=>floatval($actividadLaboral->total)];
+                                    
+                                }
+                
+                                $jsonDataActividadLaboral = json_encode($datosActividadLaboral);
+                    
+                    //GRAFICO ACTIVIDAD LABORAL POR ESTADO CIVIL
+
+                    $estadosCivilesActsLabs = DB::table('academicos')
+                    ->join('egresados', 'egresados.id', '=', 'academicos.egresado_id')
+                    ->join('actividadesLaborales', 'actividadesLaborales.egresado_id', '=', 'academicos.egresado_id')
+                    ->selectRaw('actividadesLaborales.actividad_laboral, 
+                                 COUNT(CASE WHEN egresados.estado_civil = "soltero" THEN 1 END) AS Soltero,
+                                 COUNT(CASE WHEN egresados.estado_civil = "casado" THEN 1 END) AS Casado,
+                                 COUNT(CASE WHEN egresados.estado_civil = "viudo" THEN 1 END) AS Viudo,
+                                 COUNT(CASE WHEN egresados.estado_civil = "union_libre" THEN 1 END) AS Union_Libre,
+                                 COUNT(CASE WHEN egresados.estado_civil = "separado" THEN 1 END) AS Separado
+                                 ')
+                    ->where('academicos.licenciatura', '=', $pe)
+                    ->orWhere(DB::raw('left(academicos.matricula,2)') , '=' , $ciclo)
+                    ->groupBy('actividadesLaborales.actividad_laboral')
+                    ->get();
+        
+                    $datosEstadosCivilesActsLabs = [];
+                
+                    foreach($estadosCivilesActsLabs as $estadoCivilActLab)
+                    {
+                        $datosEstadosCivilesActsLabs[] = ['soltero'=>$estadoCivilActLab->Soltero,'casado'=>$estadoCivilActLab->Casado,'viudo'=>$estadoCivilActLab->Viudo,'union_libre'=>$estadoCivilActLab->Union_Libre,'separado'=>$estadoCivilActLab->Separado];
+                        
+                    }
+    
+                    $jsonEstadosCivilesActsLabs = json_encode($datosEstadosCivilesActsLabs);
             }
 
-               return view('estadisticas')->with(compact('jsonDataModalidad','jsonDataModalidad_Licenciatura','jsonDataMes','jsonDataDia'));
+            return view('admin-estadistica-egresado')->with(compact('jsonDataModalidad','jsonDataModalidad_Licenciatura','jsonDataMes','jsonDataDia','jsonDataPromedio', 'jsonDataEstadoCivil', 'jsonDataActividadLaboral', 'jsonEstadosCivilesActsLabs'));
      
         
     }
 
-    public function descargar(Request $request)
+    public function consultarDescargar(Request $request)
     {
         
         $ciclo = $request->input('ciclo1');
@@ -473,10 +771,10 @@ class AdministradoresController extends Controller
 
         
        
-        return view('descargar',compact('user'));        
+        return view('admin-consultar-descargar',compact('user'));        
     }
 
-    public function export(Request $request)
+    public function exportar(Request $request)
     {
         $ciclo = session('ciclo');
         $pe = session('pe');

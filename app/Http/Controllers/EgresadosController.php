@@ -20,15 +20,20 @@ class EgresadosController extends Controller
     {
 
     }
-    
+
     public function create()
+    {
+
+    }
+    
+    public function registro()
     {
         // La función create me permite mostrar la página inicial del sitio web
         // Al mismo tiempo a la vista se le pasa una variable denominada modalidades
         // la cual contiene los campos de la tabla Modalidades.
 
         $modalidades = Modalidad::all();
-        return view('inicio', compact('modalidades'));
+        return view('egresado-registro', compact('modalidades'));
     }
 
     public function store(StoreEgresado $request)
@@ -76,7 +81,7 @@ class EgresadosController extends Controller
             //NOTA: A esta ruta se le pasa una variable llamada "success" mediante el mètodo with, dicho mensaje
             //aparecera en la vista "inicio". Muy importante RECORDAR que en la vista "inicio" se deben "cachar" los
             //este mensaje
-            return redirect()->route('crear_registro')->with('success', 'Estimado Egresado, tu matrícula ya existe en el sistema');
+            return redirect()->route('modalidad.registro')->with('success', 'Estimado Egresado, tu matrícula ya existe en el sistema');
         }
         else
         {
@@ -120,7 +125,7 @@ class EgresadosController extends Controller
             
             //Despuès de guardar los datos, se retornara una ruta, que lleva por nombre "reporte" Ver archivo de rutas. como también se le
             //pasa la variable $matricula para que la vista llamada "reporte" pueda trabajar con dicha variable.
-            return redirect()->route('reporte_modalidad', $matricula)->with('success', 'Tus datos han sido registrados satisfactoriamente');
+            return redirect()->route('modalidad.show', $matricula)->with('success', 'Tus datos han sido registrados satisfactoriamente');
         }
         
 
@@ -143,31 +148,10 @@ class EgresadosController extends Controller
        ->where('academicos.matricula', '=', $matricula )
        ->get();
 
-        return view('reporte', compact('user'));
+        return view('egresado-mostrar', compact('user'));
     }
 
-    public function edit()
-    {
-
-    }
-
-    public function update()
-    {
-
-    }
-
-    public function destroy()
-    {
-
-    }
-
-    public function requerimientos ()
-    {
-        
-
-    }
-
-    public function download($matricula)
+    public function descargar($matricula)
     {
         //Este método recibe de la vista (ruta que se encuentra el botón "Reporte") una
         //variable llamada "matricula" la cual permitirá a la siguiente consulta obtener
@@ -203,11 +187,11 @@ class EgresadosController extends Controller
         }
 
 
-        $pdf = \PDF::loadView('documento',compact('modalidad','user', 'licenciatura'));
+        $pdf = \PDF::loadView('egresado-requerimientos',compact('modalidad','user', 'licenciatura'));
         return $pdf->stream('archivo.pdf');     
     }
 
-    public function consulta_requerimientos(Request $request)
+    public function consultar(Request $request)
     {
                $matricula = $request->get('matricula');
 
@@ -239,16 +223,40 @@ class EgresadosController extends Controller
                        break;            
                }
 
-                 $pdf = \PDF::loadView('documento',compact('modalidad','user', 'licenciatura'));
+                 $pdf = \PDF::loadView('egresado-requerimientos',compact('modalidad','user', 'licenciatura'));
                     return $pdf->stream('archivo.pdf');  
                 }
 
                 else
 
                 {
-                    return redirect('modalidad/consulta')->with('success', 'La Matrícula no esta registrada o es incorrecta');
-                }       
-        
+                    return redirect('modalidad/consultar/requerimientos')->with('success', 'La Matrícula no esta registrada o es incorrecta');
+                }               
     }   
 
+
+    public function edit()
+    {
+
+    }
+
+    public function update()
+    {
+
+    }
+
+    public function destroy()
+    {
+
+    }
+
+    public function requerimientos ()
+    {
+        
+
+    }
+
+   
+
+  
 }

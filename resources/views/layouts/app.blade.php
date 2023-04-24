@@ -18,16 +18,22 @@
 		    <!-- INICIA EL BARNER -->
 		   	<img src="{{asset('img/modalidad.jpg')}}"  width="1140"  alt="">
 				<!-- INICIA EL MENU HORIZONTAL -->
-   	    			@include('layouts.menuPrueba') 
+   	    			@include('layouts.menu') 
 					<!-- PERMITE ENVIAR MENSAJES DE INFORMACIÒN AL USUARIO -->
-   	    			<div class="jumbotron jumbotron-fluid">
-						 @include('flash::message')
+						@if (Auth::guest())
+                       
+					   @else   
+					   <div style="float:right;margin-right:65px;margin-top:15px;"> Bienvenido: <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;&nbsp;<strong>{{  Auth::user()->name }}</strong>  </div>
+					   @endif
+					<div class="jumbotron jumbotron-fluid">
+					
 						 <!-- PERMITE INSERTAR CONTENIDO VARIABLE DE CADA PÁGINA-->
-						 @yield('contenido')	
+
+						 <div style="clear:both"> @yield('contenido')	</div>
 					</div>
    	    </div>
 	   	<footer class="footer-base panel-footer jumbotron">
-        	<font color=#ffffff><center>&copy; LATICS - DAMC-UJAT 2023 - Todos los Derechos Reservados</center></font>
+        	<font color=#ffffff><center>&copy; LATICS - DAMC-UJAT 2015 - 2023 - Todos los Derechos Reservados</center></font>
 		</footer>
   </body>
 </html>

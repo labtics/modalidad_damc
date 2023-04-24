@@ -15,7 +15,7 @@
 	<div class="card login-form">
 	<div class="card-body">
 		<div class="card-text">
-		@include('mensajes')	
+		@include('layouts.mensajes')	
 		<!--
 			<div class="alert alert-danger alert-dismissible fade show" role="alert">Incorrect username or password.</div> -->
 			<form method = "post">
@@ -35,17 +35,17 @@
 				</div>
 				<div class="form-group">
 					<label>Contraseña</label>
-					<a href="#" style="floa:right;font-size:12px;">Forgot password?</a>
+					<!--<a href="#" style="floa:right;font-size:12px;">Forgot password?</a>-->
 					<input type="password" name="password" class="form-control form-control-sm"  required>
 				</div>
 				<div class="form-group">
 					<label>Confirmar Contraseña</label>
 					<input type="password" name="password_confirmation" class="form-control form-control-sm" required >
 				</div>
-				<button type="submit" class="btn btn-success btn-block">Entrar</button>
+				<button type="submit" class="btn btn-success btn-block"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Registrar Cuenta</button>
 				
 				<div class="sign-up">
-					Don't have an account? <a href="#">Create One</a>
+					<!--Don't have an account? <a href="#">Create One</a>-->
 				</div>
 			</form>
 		</div>
